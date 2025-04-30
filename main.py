@@ -3,7 +3,7 @@ import os
 from datetime import datetime
 
 # Variables de entorno
-TOKEN_DE_ACCESO = os.getenv(EAARIliGvlXUBO6thCygegd6YsGMd1zNJiVtYFIt2WkKPUueuU9yvxQBLgatcZCybL7SN52kWhQBBTVZB1zzJZAl6wpJEFwlGw2Ok8OQWCL1XRtZAsOPaIasTktSeRGOM2gETH6oJMsH5EmNtANuzWewFHcZBdjddiVO8A0ODalYs4x8F0GwFTfRF4)  # Nombre correcto de variable en Render
+TOKEN_DE_ACCESO = os.getenv("FB_PAGE_TOKEN")  # Nombre correcto de variable en Render
 ID_DE_PAGINA = "720700281430215"
 
 # Crear carpeta de memoria si no existe
