@@ -3,8 +3,8 @@ import os
 from datetime import datetime
 
 # Variables de entorno
-ACCESS_TOKEN = os.getenv("FB_PAGE_TOKEN")
-PAGE_ID = "720700281430215"
+TOKEN_DE_ACCESO = os.getenv("FB_PAGE_TOKEN")  # Nombre correcto de variable en Render
+ID_DE_PAGINA = "720700281430215"
 
 # Crear carpeta de memoria si no existe
 os.makedirs("memoria", exist_ok=True)
@@ -23,7 +23,7 @@ def obtener_publicaciones(page_id, access_token, limit=100):
         data = r.json()
         publicaciones.extend(data.get("data", []))
         url = data.get("paging", {}).get("next")
-        params = None  # Solo en la primera solicitud
+        params = None  # Solo en la primera solicitud se usa 'params'
     return publicaciones
 
 def extraer_nombre_oculto(texto):
@@ -45,9 +45,9 @@ def guardar_en_memoria(publicaciones):
     print(f"Se guardaron {len(publicaciones)} publicaciones en {MEMORY_FILE}")
 
 if __name__ == "__main__":
-    token = ACCESS_TOKEN
+    token = TOKEN_DE_ACCESO
     if not token:
         print("Falta el token de acceso en la variable de entorno FB_PAGE_TOKEN")
     else:
-        publicaciones = obtener_publicaciones(PAGE_ID, token)
+        publicaciones = obtener_publicaciones(ID_DE_PAGINA, token)
         guardar_en_memoria(publicaciones)
