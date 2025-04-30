@@ -1,17 +1,16 @@
-import requests
 import os
-from datetime import datetime
+import requests
 
 # Variables de entorno
-TOKEN_DE_ACCESO = os.getenv("FB_PAGE_TOKEN")  # Nombre correcto de variable en Render
-ID_DE_PAGINA = "720700281430215"
-
-# Crear carpeta de memoria si no existe
-os.makedirs("memoria", exist_ok=True)
+ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
+PAGE_ID = os.getenv("PAGE_ID", "720700281430215")
+API_VERSION = os.getenv("API_VERSION", "v22.0")
 MEMORY_FILE = "memoria/publicaciones_memoria.txt"
 
+os.makedirs("memoria", exist_ok=True)
+
 def obtener_publicaciones(page_id, access_token, limit=100):
-    url = f"https://graph.facebook.com/v19.0/{page_id}/posts"
+    url = f"https://graph.facebook.com/{API_VERSION}/{page_id}/posts"
     params = {
         "access_token": access_token,
         "fields": "id,message,created_time",
@@ -23,10 +22,12 @@ def obtener_publicaciones(page_id, access_token, limit=100):
         data = r.json()
         publicaciones.extend(data.get("data", []))
         url = data.get("paging", {}).get("next")
-        params = None  # Solo en la primera solicitud se usa 'params'
+        params = None  # Solo usar en la primera request
     return publicaciones
 
 def extraer_nombre_oculto(texto):
+    if not texto:
+        return "No identificado"
     lineas = texto.split("\n")
     for linea in reversed(lineas):
         if any(nombre in linea.lower() for nombre in ["asesor", "contacto", "federico", "juan", "martin"]):
@@ -45,9 +46,8 @@ def guardar_en_memoria(publicaciones):
     print(f"Se guardaron {len(publicaciones)} publicaciones en {MEMORY_FILE}")
 
 if __name__ == "__main__":
-    token = TOKEN_DE_ACCESO
-    if not token:
-        print("Falta el token de acceso en la variable de entorno FB_PAGE_TOKEN")
+    if not ACCESS_TOKEN:
+        print("Falta la variable de entorno ACCESS_TOKEN.")
     else:
-        publicaciones = obtener_publicaciones(ID_DE_PAGINA, token)
+        publicaciones = obtener_publicaciones(PAGE_ID, ACCESS_TOKEN)
         guardar_en_memoria(publicaciones)
