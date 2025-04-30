@@ -1,34 +1,53 @@
-import requests
-import csv
+solicitudes de importación
+importar sistema operativo
+desde datetime importar datetime
 
-# Token de acceso de tu página (pegá aquí tu token completo entre comillas)
-ACCESS_TOKEN = 'EAARIliGvlXUBOxvx9K2cZBEsA0WmC61LDn6rBEUOCpVJz7n32MXXZALl0SXbrOb60Vz0Sck041PcD2VeCjdS8MCQCZBO7OqZB3vFcZAo0a6GhHF9YhY30XpkZCcyG5ZCK8x3mZBJLvb7MCTVLVApdkeSXOFtRs1W4ge9lqiKssU0QsN381cDXZCvqaErW2R2z'
+# Variables de entorno
+TOKEN DE ACCESO = os.getenv("TOKEN DE PÁGINA DE FB")
+ID DE PÁGINA = "720700281430215"
 
-# ID de tu página
-PAGE_ID = '720700281430215'
+# Crear carpeta de memoria si no existe
+os.makedirs("memoria", existe_ok=True)
+MEMORY_FILE = "memoria/publicaciones_memoria.txt"
 
-# URL de consulta para traer los grupos
-url = f'https://graph.facebook.com/v19.0/{PAGE_ID}/groups?access_token={ACCESS_TOKEN}'
+def obtener_publicaciones(page_id, access_token, limit=100):
+    url = f"https://graph.facebook.com/v19.0/{page_id}/posts"
+    parámetros = {
+        "token_de_acceso": token_de_acceso,
+        "campos": "id,mensaje,hora_de_creación",
+        "límite": límite
+    }
+    publicaciones = []
+    mientras que URL:
+        r = solicitudes.get(url, params=params)
+        datos = r.json()
+        publicaciones.extend(data.get("datos", []))
+        url = datos.get("paginación", {}).get("siguiente")
+        params = Ninguno # sólo usar params en la primera solicitud
+    volver publicaciones
 
-# Hacer la solicitud
-response = requests.get(url)
-data = response.json()
+def extraer_nombre_oculto(texto):
+    lineas = texto.split("\n")
+    para linea en reversa(lineas):
+        if any(nombre in linea.lower() for nombre in ["asesor", "contacto", "federico", "juan", "martin"]):
+            devolver linea.strip()
+    devolver "No identificado"
 
-# Mostrar los grupos en consola
-print("Grupos encontrados:\n")
-groups = data.get('data', [])
+def guardar_en_memoria(publicaciones):
+    con open(MEMORY_FILE, "w", encoding="utf-8") como f:
+        para pub en publicaciones:
+            mensaje = pub.get("mensaje", "").replace("\n", " ").strip()
+            fecha = pub.get("hora_de_creación", "")
+            asesor = extraer_nombre_oculto(mensaje)
+            f.write(f"{fecha} | ID: {pub['id']} | Asesor: {asesor}\n")
+            f.write(f"{mensaje}\n")
+            f.write("-" * 60 + "\n")
+    print(f"Se guardaron {len(publicaciones)} publicaciones en {MEMORY_FILE}")
 
-if not groups:
-    print("No se encontraron grupos asociados.")
-else:
-    for group in groups:
-        print(f"Nombre: {group.get('name')} | ID: {group.get('id')}")
-
-    # Guardar en un CSV
-    with open('grupos_pagina.csv', mode='w', newline='', encoding='utf-8') as file:
-        writer = csv.writer(file)
-        writer.writerow(['Nombre del Grupo', 'ID del Grupo'])
-        for group in groups:
-            writer.writerow([group.get('name'), group.get('id')])
-
-    print("\n¡Grupos guardados en grupos_pagina.csv!")
+si __nombre__ == "__principal__":
+    token = TOKEN_DE_ACCESO
+    si no es token:
+        print("Falta el token de acceso en la variable de entorno FB_PAGE_TOKEN")
+    demás:
+        publicaciones = obtener_publicaciones(PAGE_ID, token)
+        guardar_en_memoria(publicaciones)
